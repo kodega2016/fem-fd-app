@@ -1,6 +1,9 @@
 name: Build And Deploy
 on:
+  pull_request:
   push:
+    branches:
+      - main
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -8,6 +11,5 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v4
 
-      - name: list the contents
-        run: |
-          ls -lah
+      - name: build image
+        run: make build-image
