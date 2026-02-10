@@ -34,7 +34,7 @@ build-image-login:
 build-image-push: build-image-login build-image
 	docker image push  $(BUILD_IMAGE):$(GIT_SHA)
 
-build-image-pull:
+build-image-pull: build-image-login
 	docker image pull $(BUILD_IMAGE):$(GIT_SHA)
 
 build-image-migrate:
