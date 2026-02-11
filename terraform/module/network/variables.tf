@@ -1,11 +1,11 @@
 variable "name" {
   type        = string
-  description = "The name of the vpc"
+  description = "Name of the network"
 }
 
 variable "availability_zones" {
   type        = list(string)
-  description = "The availability zones for the vpc"
+  description = "List of availability zones"
 }
 
 variable "cidr" {

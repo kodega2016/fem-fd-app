@@ -8,3 +8,4 @@ variable "name" {
   description = "Name of the cloud resource"
   type        = string
 }
+
