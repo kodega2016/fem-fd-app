@@ -1,5 +1,6 @@
 module "staging" {
   source          = "./module/environment"
-  bastion_ingress = local.bastion_ingress
   name            = "staging"
+  cidr            = "10.0.0.0/16"
+  bastion_ingress = local.bastion_ingress
 }
