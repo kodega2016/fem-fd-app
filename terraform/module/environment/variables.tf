@@ -9,7 +9,7 @@ variable "name" {
   type        = string
 }
 
-variable "cidr"{
-  description="The CIDR for the network"
-  type=string
+variable "cidr" {
+  description = "The CIDR for the network"
+  type        = string
 }
