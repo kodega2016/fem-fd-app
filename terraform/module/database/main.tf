@@ -27,7 +27,7 @@ module "db" {
   manage_master_user_password         = false
   max_allocated_storage               = 100
   option_group_name                   = "default:postgres-17"
-  parameter_group_name                = "default:postgres17"
+  parameter_group_name                = "default.postgres17"
   password_wo                         = random_string.password.result
   password_wo_version                 = 0
   publicly_accessible                 = false
