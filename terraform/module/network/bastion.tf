@@ -10,7 +10,9 @@ resource "aws_key_pair" "bastion" {
 
 
 module "secret" {
-  source      = "terraform-aws-modules/ssm-parameter/aws"
+  source  = "terraform-aws-modules/ssm-parameter/aws"
+  version = "2.1.0"
+
   name        = "/${var.name}/bastion/private-key"
   value       = tls_private_key.bastion.private_key_pem
   secure_type = true
