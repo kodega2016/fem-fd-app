@@ -123,3 +123,39 @@ resource "aws_autoscaling_group" "this" {
     propagate_at_launch = true
   }
 }
+
+resource "aws_autoscaling_policy" "this" {
+  for_each = {
+    for provider_name, provider in var.capacity_providers : provider_name => provider
+  }
+  autoscaling_group_name = aws_autoscaling_group.this[each.key].name
+  name                   = "${var.name}-${each.key}-cpu-target-tracking"
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 50
+  }
+}
+
+
+resource "aws_ecs_capacity_provider" "this" {
+  for_each = {
+    for provider_name, provider in var.capacity_providers : provider_name => provider
+  }
+
+  name = "${var.name}-${each.key}"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.this[each.key].arn
+    managed_scaling {
+      status = "DISABLED"
+    }
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "this" {
+  cluster_name       = aws_ecs_cluster.this.name
+  capacity_providers = [for provider_name, provider in var.capacity_providers : aws_ecs_capacity_provider.this[provider_name].name]
+}
