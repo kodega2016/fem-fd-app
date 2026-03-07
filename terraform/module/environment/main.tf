@@ -15,6 +15,17 @@ module "database" {
 }
 
 module "cluster" {
-  source = "../cluster"
-  name   = var.name
+  source          = "../cluster"
+  name            = var.name
+  vpc_id          = module.network.vpc_id
+  security_groups = [module.network.private_security_groups]
+  subnets         = module.network.private_subnets
+  capacity_providers = {
+    "spot" = {
+      instance_type = "t3.medium"
+      spot          = true
+      volume_size   = 50
+      volume_type   = "gp2"
+    }
+  }
 }

@@ -12,10 +12,9 @@ resource "aws_iam_role" "this" {
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
-resource "aws_iam_policy_attachment" "service_role" {
-  name       = var.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerServiceForEC2Role"
-  roles      = [aws_iam_role.this.name]
+resource "aws_iam_role_policy_attachment" "service_role" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+  role       = aws_iam_role.this.name
 }
 
 
@@ -45,40 +44,38 @@ module "private-key" {
 }
 
 
+
 resource "aws_launch_template" "this" {
-  for_each = {
-    for provider_name, provider in var.capacity_providers : provider_name => provider
-  }
-
-
-  name_prefix   = "${var.name}-${each.key}-"
+  for_each      = { for provider_name, provider in var.capacity_providers : provider_name => provider }
+  image_id      = jsondecode(data.aws_ssm_parameter.ecs_optimized_ami.value)["image_id"]
   instance_type = each.value.instance_type
-  image_id      = jsondecode(data.aws_ssm_parameter.ecs-optimized-ami.value)["image_id"]
   key_name      = aws_key_pair.this.key_name
-
+  name_prefix   = "${var.name}-${each.key}-"
 
   block_device_mappings {
     device_name = "/dev/xvda"
-
     ebs {
+      delete_on_termination = true
       volume_size           = each.value.volume_size
       volume_type           = each.value.volume_type
-      delete_on_termination = true
     }
-  }
-
-  network_interfaces {
-    security_groups             = var.security_groups
-    associate_public_ip_address = false
   }
 
   iam_instance_profile {
     name = aws_iam_instance_profile.this.name
   }
 
+  dynamic "instance_market_options" {
+    for_each = each.value.spot ? [1] : []
 
-  instance_market_options {
-    market_type = each.value.spot ? "spot" : "on-demand"
+    content {
+      market_type = each.value.spot ? "spot" : "on-demand"
+    }
+  }
+
+  network_interfaces {
+    associate_public_ip_address = false
+    security_groups             = var.security_groups
   }
 
   user_data = base64encode(templatefile("${path.module}/user_data.tpl", {
@@ -92,10 +89,10 @@ resource "aws_autoscaling_group" "this" {
     for provider_name, provider in var.capacity_providers : provider_name => provider
   }
 
-  name_prefix         = "${var.name}-${each.key}-"
   desired_capacity    = 1
-  min_size            = 1
   max_size            = 5
+  min_size            = 1
+  name_prefix         = "${var.name}-${each.key}-"
   vpc_zone_identifier = var.subnets
 
   launch_template {
@@ -105,22 +102,22 @@ resource "aws_autoscaling_group" "this" {
 
   instance_refresh {
     strategy = "Rolling"
+    triggers = ["tag"]
     preferences {
       min_healthy_percentage = 50
     }
-    triggers = ["tag"]
   }
 
   tag {
     key                 = "AmazonECSManaged"
-    value               = true
     propagate_at_launch = true
+    value               = "true"
   }
 
   tag {
     key                 = "Name"
-    value               = var.name
     propagate_at_launch = true
+    value               = var.name
   }
 }
 
@@ -159,3 +156,4 @@ resource "aws_ecs_cluster_capacity_providers" "this" {
   cluster_name       = aws_ecs_cluster.this.name
   capacity_providers = [for provider_name, provider in var.capacity_providers : aws_ecs_capacity_provider.this[provider_name].name]
 }
+

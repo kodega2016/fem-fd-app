@@ -4,7 +4,7 @@ resource "aws_cloudfront_vpc_origin" "this" {
     arn                    = aws_lb.this.arn
     http_port              = 80
     https_port             = 443
-    origin_protocol_policy = "https-only"
+    origin_protocol_policy = "http-only"
 
     origin_ssl_protocols {
       items    = ["TLSv1.2"]
@@ -49,5 +49,13 @@ resource "aws_cloudfront_distribution" "this" {
 
   viewer_certificate {
     cloudfront_default_certificate = true
+  }
+
+  tags = {
+    vpc_origin_arn = aws_lb.this.arn
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }

@@ -10,6 +10,6 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 
-data "aws_ssm_parameter" "ecs-optimized-ami" {
+data "aws_ssm_parameter" "ecs_optimized_ami" {
   name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
 }

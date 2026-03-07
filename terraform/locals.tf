@@ -1,3 +1,3 @@
 locals {
-  bastion_ingress = ["202.166.217.33/32"]
+  bastion_ingress = ["120.23.183.77/32"]
 }

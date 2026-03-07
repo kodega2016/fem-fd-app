@@ -18,6 +18,7 @@ resource "aws_vpc_security_group_egress_rule" "all" {
 }
 
 resource "aws_lb" "this" {
+  name                       = "${var.name}-load-balancer"
   enable_deletion_protection = false
   idle_timeout               = 300
   internal                   = true
@@ -29,6 +30,7 @@ resource "aws_lb" "this" {
     var.security_groups
   )
 }
+
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
   port              = "80"
