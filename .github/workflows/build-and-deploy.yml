@@ -47,13 +47,14 @@ jobs:
       - if: always()
         run: make down
 
-  deploy:
+  apply:
     concurrency:
       cancel-in-progress: false
       group: deploy-lock
     needs:
       - test
     runs-on: ubuntu-latest
+    if: github.ref=='refs/heads/main'
     steps:
       - name: checkout the code
         uses: actions/checkout@v5
