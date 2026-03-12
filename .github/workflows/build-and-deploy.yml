@@ -54,7 +54,7 @@ jobs:
     needs:
       - test
     runs-on: ubuntu-latest
-    if: github.ref=='refs/heads/main'
+    if: github.ref == 'refs/head/main' || github.ref == 'refs/head/prod'
     steps:
       - name: checkout the code
         uses: actions/checkout@v5
