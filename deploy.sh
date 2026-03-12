@@ -6,7 +6,8 @@ cat > overrides.txt <<EOF
   "containerOverrides": [
     {
       "name": "service",
-      "command": ["goose", "-dir", "migrations", "up"]
+      "command": ["goose", "-dir", "migrations", "up"],
+      "memory": 256
     }
   ]
 }
