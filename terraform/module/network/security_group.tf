@@ -67,6 +67,7 @@ module "security_group_private" {
   name               = "${var.name}-private"
   description        = "Security group for private subnets"
   vpc_id             = module.vpc.vpc_id
+  egress_rules       = ["all-all"]
   egress_cidr_blocks = ["0.0.0.0/0"]
   ingress_with_self = [
     {
