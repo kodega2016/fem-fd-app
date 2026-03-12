@@ -1,6 +1,5 @@
 name: Terraform
 on:
-  push:
   pull_request:
   push:
     branches:
@@ -12,4 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: setup the terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: check the terraform version
+        run: terraform version
