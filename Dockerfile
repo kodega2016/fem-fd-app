@@ -1,7 +1,7 @@
 FROM public.ecr.aws/docker/library/golang:1.24.2-alpine AS build
 
 # Install dependencies
-RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+RUN go install github.com/pressly/goose/v3/cmd/goose@v3.24.2
 
 # Set the working directory
 WORKDIR /app
