@@ -34,3 +34,43 @@ jobs:
       - name: validate the terraform
         run: terraform validate
         working-directory: ./terraform
+
+
+  plan:
+    runs-on: ubuntu-latest
+    env:
+      AWS_DEFAULT_REGION: ${{vars.AWS_DEFAULT_REGION}}
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+    needs:
+      - check
+    concurrency:
+      group: tf-lock
+      cancel-in-progress: false
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v5
+
+      - name: setup the terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: check the terraform version
+        run: terraform version
+
+      - name: validate the terraform
+        run: terraform fmt --check
+        working-directory: ./terraform
+
+      - name: initialize the terraform
+        run: terraform init
+        working-directory: ./terraform
+
+      - name: validate the terraform
+        run: terraform plan -out "terraform.tfplan"
+        working-directory: ./terraform
+
+      - name: upload the artifact
+        uses: actions/upload-artifact@v4
+        with:
+            name: terraform.tfplan
+            path: terraform/terraform.tfplan
