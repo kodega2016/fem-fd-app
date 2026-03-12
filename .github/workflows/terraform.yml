@@ -9,6 +9,10 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    env:
+      AWS_DEFAULT_REGION: ${{vars.AWS_DEFAULT_REGION}}
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
     steps:
       - name: checkout the code
         uses: actions/checkout@v5
@@ -18,3 +22,11 @@ jobs:
 
       - name: check the terraform version
         run: terraform version
+
+      - name: validate the terraform
+        run: terraform fmt --check
+        workflow-directory: ./terraform
+
+      - name: initialize the terraform
+        run: terraform init
+        workflow-directory: ./terraform
