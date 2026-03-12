@@ -25,8 +25,12 @@ jobs:
 
       - name: validate the terraform
         run: terraform fmt --check
-        workflow-directory: ./terraform
+        working-directory: ./terraform
 
       - name: initialize the terraform
         run: terraform init
-        workflow-directory: ./terraform
+        working-directory: ./terraform
+
+      - name: validate the terraform
+        run: terraform validate
+        working-directory: ./terraform
